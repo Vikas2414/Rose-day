@@ -29,18 +29,22 @@
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             max-width: 90%;
-            width: 400px; /* Fixed width to keep buttons stable */
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        h1 { color: #ff5f6d; margin: 20px 0; font-size: 28px; }
+        h1 { color: #ff5f6d; margin: 20px 0; font-size: 26px; }
 
         .btn-group {
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin-top: 20px;
+            margin-top: 10px;
             position: relative;
-            height: 50px; /* Keeps layout stable when button moves */
+            width: 100%;
+            height: 50px; /* Fixed height for button movement */
         }
 
         button {
@@ -50,13 +54,13 @@
             border: none;
             cursor: pointer;
             transition: 0.3s;
-            z-index: 100;
+            z-index: 2;
         }
 
         #yes-btn { background: #ff5f6d; color: white; }
-        #no-btn { background: #eee; color: #666; position: absolute; left: 55%; }
+        #no-btn { background: #eee; color: #666; position: absolute; left: 60%; }
 
-        /* --- BOOK SECTION (Hidden initially) --- */
+        /* --- BOOK SECTION --- */
         #book-wrapper {
             display: none;
             opacity: 0;
@@ -77,17 +81,13 @@
         .page.flipped { transform: rotateY(-180deg); }
         .page-content { backface-visibility: hidden; height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
 
-        /* GIF Box Styling */
-        .gif-box { background: rgba(255,255,255,0.25); padding: 8px; border-radius: 14px; width: 100%; display: flex; justify-content: center; }
-        .gif-box img { width: 100%; border-radius: 12px; object-fit: cover; }
-        
-        /* Proposal GIF specific styling */
-        .proposal-gif { width: 100%; border-radius: 12px; }
-
         /* Floating hearts */
         .heart { position: absolute; bottom: -20px; color: rgba(255,255,255,0.8); animation: floatUp linear infinite; pointer-events: none; }
         @keyframes floatUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-120vh); opacity: 0; } }
 
+        .gif-box { background: rgba(255,255,255,0.4); padding: 10px; border-radius: 14px; width: 100%; display: flex; justify-content: center; }
+        .gif-box img { width: 100%; border-radius: 12px; object-fit: cover; }
+        
         .next { font-size: 26px; cursor: pointer; animation: bounce 1.5s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
 
@@ -98,6 +98,7 @@
         }
         .lock-overlay.hidden { display: none; }
         .lock-input { border: none; border-radius: 10px; padding: 10px; margin-bottom: 10px; text-align: center; }
+
     </style>
 </head>
 <body>
@@ -105,7 +106,7 @@
     <div id="proposal-section">
         <div class="proposal-card">
             <div class="gif-box">
-                <img id="proposal-gif" class="proposal-gif" src="https://media.tenor.com/ecMcHeDqY1SAAAAi/bubu-dudu-flower.gif" alt="Asking">
+                <img id="proposal-gif" src="https://media.tenor.com/ecMcHeDqY1SAAAAi/bubu-dudu-flower.gif" alt="Bubu Dudu">
             </div>
             
             <h1>Will you be my Valentine?</h1>
@@ -123,7 +124,7 @@
                 <div class="lock-overlay" id="lock">
                     <p style="margin-bottom:10px">One more thing... password?</p>
                     <input type="password" id="lockInput" class="lock-input" placeholder="Hint: L_ _ E">
-                    <button id="unlockBtn" style="background:white; color:#ff5f6d; padding: 5px 15px; border-radius: 15px; border:none; cursor:pointer;">Unlock</button>
+                    <button id="unlockBtn" style="background:white; color:#ff5f6d; padding: 5px 15px;">Unlock</button>
                 </div>
                 <div class="page-content">
                     <h2>You said YES! 🌹</h2>
@@ -173,59 +174,52 @@
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        const gifImg = document.getElementById('proposal-gif');
+        // --- LOGIC FOR GIFS & BUTTONS ---
+        
         const noBtn = document.getElementById('no-btn');
         const yesBtn = document.getElementById('yes-btn');
-        
-        // Image Links
-        const GIF_ANGRY = "https://media.tenor.com/cGV5OMz9NaAAAAAi/bubu-dudu-angry.gif";
-        const GIF_SAD = "https://media.tenor.com/cFUxnfAGL3OAAAAAi/bubu-dudu-sad.gif";
-        const GIF_HAPPY = "https://media.tenor.com/bVXbGAAAAAi/bubu-dudu-happy.gif";
+        const proposalGif = document.getElementById('proposal-gif');
+        let noHoverCount = 0;
 
-        let noClickCount = 0;
+        // 1. "No" Button Behavior (Run away + Change GIF)
+        noBtn.onmouseover = () => {
+            // Count how many times she tries
+            noHoverCount++;
 
-        // 1. "No" Button Interaction
-        function moveNoButton() {
+            // Logic to change GIF based on attempts
+            if (noHoverCount === 1) {
+                // First try: Angry
+                proposalGif.src = "https://media.tenor.com/cGV5OMz9NaAAAAAi/bubu-dudu-angry.gif";
+            } else if (noHoverCount >= 2) {
+                // Second try onwards: Sad
+                proposalGif.src = "https://media.tenor.com/cFUxnfAGL3OAAAAi/bubu-dudu-sad.gif";
+            }
+
+            // Move the button
             const x = Math.random() * (window.innerWidth - 100);
             const y = Math.random() * (window.innerHeight - 50);
             noBtn.style.position = 'fixed';
             noBtn.style.left = x + 'px';
             noBtn.style.top = y + 'px';
-            
-            noClickCount++;
+        };
 
-            // Logic: 1st try = Angry, 2nd+ try = Sad
-            if (noClickCount === 1) {
-                gifImg.src = GIF_ANGRY;
-            } else if (noClickCount > 1) {
-                gifImg.src = GIF_SAD;
-            }
-        }
-
-        // Trigger on hover (desktop) and click (mobile)
-        noBtn.addEventListener('mouseover', moveNoButton);
-        noBtn.addEventListener('click', moveNoButton);
-
-        // 2. "Yes" Button Interaction
+        // 2. "Yes" Button Behavior (Happy GIF + Open Book)
         yesBtn.onclick = () => {
-            // Change to Happy GIF
-            gifImg.src = GIF_HAPPY;
-            
-            // Explosion
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            // Change GIF to Happy immediately
+            proposalGif.src = "https://media.tenor.com/bVXbGAAAAAi/bubu-dudu-kiss.gif";
 
-            // Wait 2 seconds so she sees the Happy GIF before fading out
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            
+            // Wait a moment so she sees the happy GIF, then fade out
             setTimeout(() => {
                 document.getElementById('proposal-section').style.opacity = '0';
-                
                 setTimeout(() => {
                     document.getElementById('proposal-section').style.display = 'none';
                     const book = document.getElementById('book-wrapper');
                     book.style.display = 'block';
                     setTimeout(() => book.style.opacity = '1', 50);
-                }, 800); // Wait for fade out
-            }, 2000); // 2 second delay for happy gif
+                }, 800);
+            }, 1500); // 1.5 second delay to see the happy GIF
         };
 
         // 3. Password Lock Logic
@@ -234,19 +228,17 @@
             if(pass === "LOVE") {
                 document.getElementById('lock').classList.add('hidden');
             } else {
-                alert("Wrong password! Hint: What is this feeling? 💔");
-                document.getElementById('lock').style.animation = "shake 0.4s";
-                setTimeout(() => document.getElementById('lock').style.animation = "", 400);
+                alert("Incorrect Password 💔");
             }
         };
 
-        // 4. Page Flip Logic
+        // 4. Page Flipping Logic
         document.querySelectorAll(".page").forEach(page => {
             const next = page.querySelector(".next");
             if (next) next.onclick = () => page.classList.add("flipped");
         });
 
-        // 5. Background Hearts
+        // 5. Floating Hearts Background
         function createHeart() {
             const heart = document.createElement("div");
             heart.className = "heart";
@@ -258,6 +250,7 @@
             setTimeout(() => heart.remove(), 6000);
         }
         setInterval(createHeart, 300);
+
     </script>
 </body>
 </html>
