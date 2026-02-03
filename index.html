@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Will You Be My Valentine?</title>
+    <title>For My Favorite Person</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Georgia", serif; }
-        
+
         body {
             height: 100vh;
             background: radial-gradient(circle at top, #ff9a9e, #fad0c4);
@@ -27,39 +28,19 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            max-width: 90%;
+            width: 400px; /* Fixed width to keep buttons stable */
         }
 
-        /* The GIF Box */
-        .gif-box {
-            background: rgba(255,255,255,0.5);
-            padding: 10px;
-            border-radius: 14px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        
-        .gif-box img {
-            width: 100%;
-            border-radius: 12px;
-            /* Keeps the size consistent so buttons don't jump */
-            height: 200px; 
-            object-fit: cover;
-        }
+        h1 { color: #ff5f6d; margin: 20px 0; font-size: 28px; }
 
-        h1 { color: #ff5f6d; margin-bottom: 20px; font-size: 26px; }
-        
         .btn-group {
             display: flex;
             justify-content: center;
             gap: 20px;
-            width: 100%;
+            margin-top: 20px;
             position: relative;
-            height: 50px; /* Space for buttons */
+            height: 50px; /* Keeps layout stable when button moves */
         }
 
         button {
@@ -69,21 +50,11 @@
             border: none;
             cursor: pointer;
             transition: 0.3s;
-            position: absolute; /* Allows movement */
+            z-index: 100;
         }
 
-        #yes-btn { 
-            background: #ff5f6d; 
-            color: white; 
-            position: relative; /* Yes button stays put */
-        }
-        
-        #no-btn { 
-            background: #eee; 
-            color: #666; 
-            left: 50%; /* Start next to Yes button (adjusted in JS) */
-            transform: translateX(60px); 
-        }
+        #yes-btn { background: #ff5f6d; color: white; }
+        #no-btn { background: #eee; color: #666; position: absolute; left: 55%; }
 
         /* --- BOOK SECTION (Hidden initially) --- */
         #book-wrapper {
@@ -105,29 +76,28 @@
 
         .page.flipped { transform: rotateY(-180deg); }
         .page-content { backface-visibility: hidden; height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
-        
-        .nav-btns { display: flex; gap: 20px; }
-        .next, .back { font-size: 26px; cursor: pointer; animation: bounce 1.5s infinite; user-select: none; }
-        
-        /* Inner Page GIFs */
-        .page .gif-box { height: auto; } /* Reset height for book pages */
-        .page .gif-box img { height: auto; }
 
+        /* GIF Box Styling */
+        .gif-box { background: rgba(255,255,255,0.25); padding: 8px; border-radius: 14px; width: 100%; display: flex; justify-content: center; }
+        .gif-box img { width: 100%; border-radius: 12px; object-fit: cover; }
+        
+        /* Proposal GIF specific styling */
+        .proposal-gif { width: 100%; border-radius: 12px; }
+
+        /* Floating hearts */
+        .heart { position: absolute; bottom: -20px; color: rgba(255,255,255,0.8); animation: floatUp linear infinite; pointer-events: none; }
+        @keyframes floatUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-120vh); opacity: 0; } }
+
+        .next { font-size: 26px; cursor: pointer; animation: bounce 1.5s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
 
-        /* Lock Screen */
+        /* Lock Overlay */
         .lock-overlay {
-            position: absolute; inset: 0; background: linear-gradient(145deg, #ff758c, #ff7eb3);
-            border-radius: 18px; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 10;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
+            position: absolute; inset: 0; background: #ff758c; border-radius: 18px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10;
         }
-        .lock-overlay.hidden { opacity: 0; visibility: hidden; }
-        .lock-input { border: none; border-radius: 10px; padding: 10px; text-align: center; outline: none; width: 160px; margin-bottom: 10px; }
-        .lock-btn { padding: 8px 18px; border-radius: 20px; border: none; background: #fff; color: #ff5f6d; cursor: pointer; font-weight: bold; }
-        .lock-error { margin-top: 10px; font-size: 12px; color: #fff; display: none; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-
+        .lock-overlay.hidden { display: none; }
+        .lock-input { border: none; border-radius: 10px; padding: 10px; margin-bottom: 10px; text-align: center; }
     </style>
 </head>
 <body>
@@ -135,9 +105,11 @@
     <div id="proposal-section">
         <div class="proposal-card">
             <div class="gif-box">
-                <img id="proposal-gif" src="https://media.tenor.com/I7kd7S_h6wIAAAAi/peach-goma-peach-and-goma.gif">
+                <img id="proposal-gif" class="proposal-gif" src="https://media.tenor.com/ecMcHeDqY1SAAAAi/bubu-dudu-flower.gif" alt="Asking">
             </div>
+            
             <h1>Will you be my Valentine?</h1>
+
             <div class="btn-group">
                 <button id="yes-btn">YES! ❤️</button>
                 <button id="no-btn">No</button>
@@ -149,104 +121,101 @@
         <div class="book">
             <div class="page" style="z-index: 5;">
                 <div class="lock-overlay" id="lock">
-                    <div style="margin-bottom: 10px;">One last step... Password?</div>
-                    <input class="lock-input" id="lockInput" type="password" placeholder="Hint: L_ _ E">
-                    <button class="lock-btn" id="unlockBtn">Unlock</button>
-                    <div class="lock-error" id="lockError">Wrong password💔</div>
+                    <p style="margin-bottom:10px">One more thing... password?</p>
+                    <input type="password" id="lockInput" class="lock-input" placeholder="Hint: L_ _ E">
+                    <button id="unlockBtn" style="background:white; color:#ff5f6d; padding: 5px 15px; border-radius: 15px; border:none; cursor:pointer;">Unlock</button>
                 </div>
                 <div class="page-content">
                     <h2>You said YES! 🌹</h2>
-                    <p>Now, let's take a little trip through my heart...<br><br>Turn the pages slowly,<br>every one holds a feeling.</p>
+                    <p>Now, let's take a little trip through my heart...<br><br>Turn the pages to see why you're so special.</p>
                     <div class="next">➡️</div>
                 </div>
             </div>
 
             <div class="page" style="z-index: 4;">
                 <div class="page-content">
-                    <h2>Best Decision 🫠</h2>
+                    <h2 style="font-size:20px;">The Best Decision 🫠</h2>
                     <div class="gif-box"><img src="https://media.tenor.com/hmYv6-dCkGgAAAAi/bubu-dudu-bubu.gif"></div>
-                    <p>Loving you was my best decision.<br>Will always be your baby bear 🐻</p>
-                    <div class="nav-btns"><div class="back">⬅️</div><div class="next">➡️</div></div>
+                    <p>Loving you was my best decision ever.<br>My comfort place. 🐻</p>
+                    <div class="next">➡️</div>
                 </div>
             </div>
 
             <div class="page" style="z-index: 3;">
                 <div class="page-content">
-                    <h2>The Firebrigade 🚒</h2>
+                    <h2 style="font-size:18px;">Your Firebrigade 🚒</h2>
                     <div class="gif-box"><img src="https://media.tenor.com/0BlLAI6vIhoAAAAi/tkthao219-bubududu.gif"></div>
-                    <p>I'm sorry for when I'm annoying.<br>I'll always be your firebrigade to put out the anger!</p>
-                    <div class="nav-btns"><div class="back">⬅️</div><div class="next">➡️</div></div>
+                    <p>Sorry for the times I'm a handful.<br>I'll never let you stay angry for long!</p>
+                    <div class="next">➡️</div>
                 </div>
             </div>
 
             <div class="page" style="z-index: 2;">
                 <div class="page-content">
-                    <h2>Manifesting Us ✨</h2>
+                    <h2>Our Future ✨</h2>
                     <div class="gif-box"><img src="https://media.tenor.com/5T9NoewNL9EAAAAi/bubu-dudu.gif"></div>
-                    <p>The world shall see us getting married.<br>That's my manifestation. ❤️</p>
-                    <div class="nav-btns"><div class="back">⬅️</div><div class="next">➡️</div></div>
+                    <p>I'm manifesting our wedding day.<br>Promises kept, forever to go. ❤️</p>
+                    <div class="next">➡️</div>
                 </div>
             </div>
 
             <div class="page" style="z-index: 1;">
-                <div class="page-content" style="justify-content: flex-start; gap: 15px;">
-                    <h2>Forever ❤️</h2>
-                    <p style="text-align: justify; font-size: 13px;">
-                        Lost the moment I saw those beautiful brown eyes... got the ticklish feeling that the world knows as "love at first sight."<br><br>
-                        Never thought you were the woman of my dreams, but look at me looking for you in every dream. I may be irritating, but I love you more than you imagine.<br><br>
-                        Only for you, madam! 🌹💌
+                <div class="page-content" style="justify-content: flex-start;">
+                    <h2>Forever Yours ❤️</h2>
+                    <p style="margin-top:20px; font-size:13px; text-align: justify;">
+                        Lost the moment I saw those beautiful brown eyes... that "love at first sight" feeling was real.<br><br>
+                        I look for you in every dream. I might be irritating, but I love you more than you imagine.<br><br>
+                        Happy Valentine's Day, my love! 🌹
                     </p>
-                    <div class="back" style="margin-top: auto;">⬅️ Start Over</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION FOR GIFS ---
-        const gifs = {
-            ask: "https://media.tenor.com/I7kd7S_h6wIAAAAi/peach-goma-peach-and-goma.gif", // Default
-            angry: "https://media.tenor.com/hKfqd2D1g-cAAAAi/peach-goma.gif",  // First No
-            sad: "https://media.tenor.com/1-1y4_sF4EAAAAAi/peach-goma-phone.gif",    // Second No
-            happy: "https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif" // Yes
-        };
-
-        const proposalGif = document.getElementById('proposal-gif');
+        // --- CONFIGURATION ---
+        const gifImg = document.getElementById('proposal-gif');
         const noBtn = document.getElementById('no-btn');
         const yesBtn = document.getElementById('yes-btn');
-        let noCount = 0;
+        
+        // Image Links
+        const GIF_ANGRY = "https://media.tenor.com/cGV5OMz9NaAAAAAi/bubu-dudu-angry.gif";
+        const GIF_SAD = "https://media.tenor.com/cFUxnfAGL3OAAAAAi/bubu-dudu-sad.gif";
+        const GIF_HAPPY = "https://media.tenor.com/bVXbGAAAAAi/bubu-dudu-happy.gif";
 
-        // 1. "No" Button Logic (Moves & Changes GIF)
+        let noClickCount = 0;
+
+        // 1. "No" Button Interaction
         function moveNoButton() {
-            noCount++;
-            
-            // Logic to change GIF based on attempts
-            if (noCount === 1) {
-                proposalGif.src = gifs.angry; // First rejection = Angry
-            } else if (noCount > 1) {
-                proposalGif.src = gifs.sad;   // Subsequent rejections = Sad
-            }
-
-            // Move the button to random spot
             const x = Math.random() * (window.innerWidth - 100);
             const y = Math.random() * (window.innerHeight - 50);
-            noBtn.style.position = 'fixed'; // Switch to fixed to move freely
+            noBtn.style.position = 'fixed';
             noBtn.style.left = x + 'px';
             noBtn.style.top = y + 'px';
+            
+            noClickCount++;
+
+            // Logic: 1st try = Angry, 2nd+ try = Sad
+            if (noClickCount === 1) {
+                gifImg.src = GIF_ANGRY;
+            } else if (noClickCount > 1) {
+                gifImg.src = GIF_SAD;
+            }
         }
 
+        // Trigger on hover (desktop) and click (mobile)
         noBtn.addEventListener('mouseover', moveNoButton);
-        noBtn.addEventListener('click', moveNoButton); // Just in case she manages to click it
+        noBtn.addEventListener('click', moveNoButton);
 
-        // 2. "Yes" Button Logic
+        // 2. "Yes" Button Interaction
         yesBtn.onclick = () => {
-            // Change to happy GIF
-            proposalGif.src = gifs.happy;
-
-            // Explosion of confetti
+            // Change to Happy GIF
+            gifImg.src = GIF_HAPPY;
+            
+            // Explosion
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
-            // Wait 2.5 seconds so she can see the Happy GIF, then show book
+            // Wait 2 seconds so she sees the Happy GIF before fading out
             setTimeout(() => {
                 document.getElementById('proposal-section').style.opacity = '0';
                 
@@ -254,42 +223,41 @@
                     document.getElementById('proposal-section').style.display = 'none';
                     const book = document.getElementById('book-wrapper');
                     book.style.display = 'block';
-                    // Small delay to allow display:block to apply before opacity transition
                     setTimeout(() => book.style.opacity = '1', 50);
-                }, 800);
-            }, 2500); 
+                }, 800); // Wait for fade out
+            }, 2000); // 2 second delay for happy gif
         };
 
-        // --- BOOK NAVIGATION LOGIC ---
-        document.querySelectorAll(".page").forEach((page, index) => {
-            const next = page.querySelector(".next");
-            const back = page.querySelector(".back");
-            
-            if (next) next.onclick = () => page.classList.add("flipped");
-            if (back) {
-                back.onclick = () => {
-                    if (index === 4) { // Last page reset
-                        document.querySelectorAll(".page").forEach(p => p.classList.remove("flipped"));
-                    } else {
-                        document.querySelectorAll(".page")[index - 1].classList.remove("flipped");
-                    }
-                };
+        // 3. Password Lock Logic
+        document.getElementById('unlockBtn').onclick = () => {
+            const pass = document.getElementById('lockInput').value.toUpperCase();
+            if(pass === "LOVE") {
+                document.getElementById('lock').classList.add('hidden');
+            } else {
+                alert("Wrong password! Hint: What is this feeling? 💔");
+                document.getElementById('lock').style.animation = "shake 0.4s";
+                setTimeout(() => document.getElementById('lock').style.animation = "", 400);
             }
+        };
+
+        // 4. Page Flip Logic
+        document.querySelectorAll(".page").forEach(page => {
+            const next = page.querySelector(".next");
+            if (next) next.onclick = () => page.classList.add("flipped");
         });
 
-        // --- PASSWORD LOGIC ---
-        const unlockBtn = document.getElementById("unlockBtn");
-        unlockBtn.onclick = () => {
-            const input = document.getElementById("lockInput").value.toUpperCase();
-            if (input === "LOVE") {
-                document.getElementById("lock").classList.add("hidden");
-            } else {
-                const err = document.getElementById("lockError");
-                err.style.display = "block";
-                document.getElementById("lock").style.animation = "shake 0.4s";
-                setTimeout(() => { document.getElementById("lock").style.animation = ""; }, 400);
-            }
-        };
+        // 5. Background Hearts
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.className = "heart";
+            heart.textContent = "❤";
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.fontSize = (10 + Math.random() * 20) + "px";
+            heart.style.animationDuration = (3 + Math.random() * 3) + "s";
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 6000);
+        }
+        setInterval(createHeart, 300);
     </script>
 </body>
 </html>
