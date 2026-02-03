@@ -1,237 +1,327 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For Sejal ❤️</title>
-    <style>
-        :root {
-            --primary-color: #ffb6c1; /* Pastel Pink */
-            --text-color: #5a3e36;    /* Warm Brown */
-            --bg-color: #ffe6e9;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine Book</title>
 
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: var(--bg-color);
-            font-family: 'Courier New', Courier, monospace; /* Vintage Typewriter feel */
-            overflow: hidden;
-        }
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Georgia", serif;
+}
 
-        /* Password Overlay */
-        #login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
+body {
+    height: 100vh;
+    background: radial-gradient(circle at top, #ff9a9e, #fad0c4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
 
-        #login-screen h2 {
-            color: var(--text-color);
-            margin-bottom: 20px;
-        }
+/* Floating hearts */
+.heart {
+    position: absolute;
+    bottom: -20px;
+    color: rgba(255,255,255,0.8);
+    animation: floatUp linear infinite;
+    pointer-events: none;
+}
 
-        input {
-            padding: 10px;
-            border: 2px solid var(--primary-color);
-            border-radius: 5px;
-            font-size: 16px;
-            outline: none;
-            text-align: center;
-        }
+@keyframes floatUp {
+    from { transform: translateY(0) scale(1); opacity: 1; }
+    to { transform: translateY(-120vh) scale(1.5); opacity: 0; }
+}
 
-        button.unlock-btn {
-            margin-top: 15px;
-            padding: 8px 20px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+/* Book */
+.book {
+    width: 340px;
+    height: 460px;
+    perspective: 1500px;
+    position: relative;
+}
 
-        .error-msg {
-            color: red;
-            margin-top: 10px;
-            display: none;
-        }
+/* Page */
+.page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(145deg, #ff5f6d, #ffc371);
+    border-radius: 18px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    transform-origin: left;
+    transform-style: preserve-3d;
+    transition: transform 1s ease;
+    padding: 22px;
+    color: #fff;
+}
 
-        /* Book Structure */
-        .book {
-            position: relative;
-            width: 350px;
-            height: 500px;
-            perspective: 1500px;
-        }
+.page.flipped {
+    transform: rotateY(-180deg);
+}
 
-        .page {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-            transition: transform 1s;
-            transform-style: preserve-3d;
-            transform-origin: left;
-            backface-visibility: hidden;
-        }
+/* Page content */
+.page-content {
+    backface-visibility: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        /* Stacking pages */
-        #p1 { z-index: 4; }
-        #p2 { z-index: 3; }
-        #p3 { z-index: 2; }
-        #p4 { z-index: 1; }
+.page h2 {
+    font-weight: normal;
+    text-align: center;
+}
 
-        .flipped {
-            transform: rotateY(-180deg);
-        }
+.page p {
+    font-size: 15px;
+    line-height: 1.5;
+    text-align: center;
+}
 
-        /* Content Styling */
-        h2 {
-            color: #d6336c;
-            font-size: 24px;
-        }
-        
-        p {
-            font-size: 16px;
-            color: var(--text-color);
-            line-height: 1.6;
-        }
+/* GIF */
+.gif-box {
+    background: rgba(255,255,255,0.25);
+    padding: 10px;
+    border-radius: 14px;
+    width: 100%;
+}
 
-        img {
-            width: 150px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
+.gif-box img {
+    width: 100%;
+    border-radius: 12px;
+}
 
-        .nav-btn {
-            background: none;
-            border: 2px solid var(--primary-color);
-            padding: 5px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            margin-top: 20px;
-            color: var(--text-color);
-            font-weight: bold;
-        }
+/* Arrow */
+.next {
+    font-size: 26px;
+    cursor: pointer;
+    animation: bounce 1.5s infinite;
+}
 
-        .nav-btn:hover {
-            background: var(--primary-color);
-            color: white;
-        }
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+}
 
-        /* Vintage aesthetic touches */
-        .vintage-border {
-            border: 2px dashed var(--primary-color);
-            padding: 10px;
-            display: inline-block;
-        }
+/* Page order */
+.page:nth-child(1) { z-index: 5; }
+.page:nth-child(2) { z-index: 4; }
+.page:nth-child(3) { z-index: 3; }
+.page:nth-child(4) { z-index: 2; }
+.page:nth-child(5) { z-index: 1; }
 
-    </style>
+/* Last page fix */
+.page.last .page-content {
+    justify-content: flex-start;
+}
+
+.page.last p {
+    margin-top: 12px;
+}
+
+/* 🔒 DATE LOCK */
+.lock-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, #ff758c, #ff7eb3);
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.lock-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.lock-title {
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.lock-input {
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
+    width: 160px;
+}
+
+.lock-btn {
+    margin-top: 12px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: none;
+    background: #fff;
+    color: #ff5f6d;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.lock-error {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #fff;
+    opacity: 0;
+}
+
+.lock-error.show {
+    opacity: 1;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+</style>
 </head>
+
 <body>
 
-    <div id="login-screen">
-        <h2>Enter The Date We Become One ❤️</h2>
-        <p>(Hint: DDMMYYYY)</p>
-        <input type="password" id="password" placeholder="Enter Date">
-        <button class="unlock-btn" onclick="checkPassword()">Open Heart</button>
-        <p class="error-msg" id="error">Wrong date! Try again 💔</p>
+<div class="book">
+
+<!-- PAGE 1 (LOCKED) -->
+<div class="page">
+    <div class="lock-overlay" id="lock">
+        <div class="lock-title">Enter password</div>
+        <input class="lock-input" id="lockInput" placeholder="password">
+        <button class="lock-btn" id="unlockBtn">Unlock</button>
+        <div class="lock-error" id="lockError">Wrong password💔</div>
     </div>
 
-    <div class="book">
-        
-        <div class="page" id="p1">
-            <h2>Happy Valentine’s Day<br>Sejal 🌹</h2>
-            <img src="https://media.tenor.com/hmYv6-dCkGgAAAAi/bubu-dudu-bubu.gif" alt="Cute Bears">
-            <p>This little book is for my future wife.<br>Turn the pages slowly...</p>
-            <button class="nav-btn" onclick="goNext(1)">Open Chapter 1 ➡️</button>
-        </div>
-
-        <div class="page" id="p2">
-            <h2>Our Vintage Romance 🎞️</h2>
-            <img src="https://media.tenor.com/f2Q8uF4F5dMAAAAi/bubu-dudu-sseeyall.gif" alt="Love">
-            <div class="vintage-border">
-                <p>Loving you feels like a 90s classic song.</p>
-                <p>No filters, no drama.<br>Just pure, simple love.</p>
-                <p>You are the heroine of my story.</p>
-            </div>
-            <button class="nav-btn" onclick="goNext(2)">Next Page ➡️</button>
-        </div>
-
-        <div class="page" id="p3">
-            <h2>The Countdown Begins ⏳</h2>
-            <img src="https://media.tenor.com/Wait9s6qgzkAAAAi/bubu-dudu.gif" alt="Wedding">
-            <p><strong>📍 Chittorgarh</strong><br><strong>📅 Feb 21, 2026</strong></p>
-            <p>I can't wait to see you in your bridal dress.<br>The world will see our promise fulfilled.</p>
-            <button class="nav-btn" onclick="goNext(3)">Read Poem ➡️</button>
-        </div>
-
-        <div class="page" id="p4">
-            <h2>Forever Yours ❤️</h2>
-            <p>Na chand ki chah,<br>Na taaron ki farmaish,</p>
-            <p>Bas <strong>Sejal</strong> ko apna banane ki hai khwaish.</p>
-            <p>Chittorgarh ki wo sham yaadgar hogi,<br>Jab tu hamesha ke liye meri hogi.</p>
-            <br>
-            <p>- Love, Vikas</p>
-            <button class="nav-btn" onclick="closeBook()">Start Over ↺</button>
-        </div>
-
+    <div class="page-content">
+        <h2>Happy Valentine’s Day Dear 🌹💌</h2>
+        <p>
+            This little book is made just for you love 🫠<br><br>
+            Turn the pages slowly,<br>
+            every one holds a feeling.
+        </p>
+        <div class="next" style="display:none;">➡️</div>
     </div>
+</div>
 
-    <script>
-        // Password Logic
-        function checkPassword() {
-            const input = document.getElementById('password').value;
-            // Password is set to your wedding date: 21022026
-            if (input === '21022026') {
-                document.getElementById('login-screen').style.display = 'none';
-            } else {
-                document.getElementById('error').style.display = 'block';
-            }
-        }
+<!-- PAGE 2 -->
+<div class="page">
+    <div class="page-content">
+        <h2 style="font-size:20px;">Loving you was my best decision 🫠🌹</h2>
+        <div class="gif-box">
+            <img src="https://media.tenor.com/hmYv6-dCkGgAAAAi/bubu-dudu-bubu.gif">
+        </div>
+        <p>
+            Will always be your little baby bear 🐻<br>
+            My comfort place 🫠
+        </p>
+        <div class="next">➡️</div>
+    </div>
+</div>
 
-        // Page Turning Logic
-        function goNext(pageNumber) {
-            const currentPage = document.getElementById('p' + pageNumber);
-            currentPage.classList.add('flipped');
-            currentPage.style.zIndex = pageNumber; // Move behind
-        }
+<!-- PAGE 3 -->
+<div class="page">
+    <div class="page-content">
+        <h2 style="font-size:15px;">Sorry for whenever i made you angry💌</h2>
+        <div class="gif-box">
+            <img src="https://media.tenor.com/0BlLAI6vIhoAAAAi/tkthao219-bubududu.gif">
+        </div>
+        <p style="font-size:11.5px;">
+            Get angry and i will be your firebrigade 🚒
+            but would never let you stay angry for long 😓
+            Your smile is everything that makes me the one who i am
+        </p>
+        <div class="next">➡️</div>
+    </div>
+</div>
 
-        function closeBook() {
-            // Reset all pages
-            for (let i = 1; i <= 4; i++) {
-                document.getElementById('p' + i).classList.remove('flipped');
-                // Reset z-index after delay to smooth animation
-                setTimeout(() => {
-                    document.getElementById('p1').style.zIndex = 4;
-                    document.getElementById('p2').style.zIndex = 3;
-                    document.getElementById('p3').style.zIndex = 2;
-                    document.getElementById('p4').style.zIndex = 1;
-                }, 500);
-            }
-        }
-    </script>
+<!-- PAGE 4 -->
+<div class="page">
+    <div class="page-content">
+        <h2 style="font-size:20px;">Our dreams will be fulfilled✨</h2>
+        <div class="gif-box">
+            <img src="https://media.tenor.com/5T9NoewNL9EAAAAi/bubu-dudu.gif">
+        </div>
+        <p>
+            The world shall see us getting married that's my manifestation
+            and our promises will be kept 🥹❤️
+        </p>
+        <div class="next">➡️</div>
+    </div>
+</div>
+
+<!-- PAGE 5 -->
+<div class="page last">
+    <div class="page-content">
+        <h2>Forever ❤️</h2>
+        <p>
+            This is the last page,<br>
+            but not the end.<br>
+            Few lines for you 🌹<br><br>
+            Lost the moment i saw those beautiful brown eyes,<br>
+            got the ticklish feeling that the world knows as "love at first sight".<br>
+            Never thought you were the woman of my dreams,<br>
+            but look at me trying to look for you in each of my dreams🫠<br>
+            I maybe irritating but i do love you more than you could ever imagine,<br>
+            This valentine's day i created this, something new 🙃
+            only for you madam only for you !! 🌹💌
+        </p>
+    </div>
+</div>
+
+</div>
+
+<script>
+/* Page flip */
+document.querySelectorAll(".page").forEach(page => {
+    const next = page.querySelector(".next");
+    if (next) next.onclick = () => page.classList.add("flipped");
+});
+
+/* Date unlock */
+const correctPassword = "LOVE";
+const lock = document.getElementById("lock");
+const input = document.getElementById("lockInput");
+const btn = document.getElementById("unlockBtn");
+const error = document.getElementById("lockError");
+const firstArrow = document.querySelector(".page .next");
+
+btn.onclick = () => {
+    if (input.value.trim() === correctPassword) {
+        lock.classList.add("hidden");
+        firstArrow.style.display = "block";
+    } else {
+        error.classList.add("show");
+        lock.style.animation = "shake 0.4s";
+        setTimeout(() => lock.style.animation = "", 400);
+    }
+};
+
+/* Hearts */
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = "❤";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (14 + Math.random() * 24) + "px";
+    heart.style.animationDuration = (4 + Math.random() * 4) + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 8000);
+}
+setInterval(createHeart, 350);
+</script>
+
 </body>
 </html>
