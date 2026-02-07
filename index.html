@@ -21,14 +21,15 @@ body {
     background: #fff;
     padding: 25px;
     border-radius: 22px;
-    width: 92%;
-    max-width: 420px;
+    width: 90%;
+    max-width: 400px; /* Slight adjustment for mobile look */
     box-shadow: 0 20px 40px rgba(0,0,0,0.25);
     text-align: center;
 }
 
 h1 {
     color: #ff3b6f;
+    margin-bottom: 10px;
 }
 
 button {
@@ -38,6 +39,11 @@ button {
     font-size: 16px;
     cursor: pointer;
     margin: 10px;
+    transition: transform 0.2s;
+}
+
+button:active {
+    transform: scale(0.95);
 }
 
 #startBtn {
@@ -53,7 +59,7 @@ button {
 #rejectBtn {
     background: #ff5252;
     color: white;
-    position: absolute;
+    position: absolute; /* Allows it to move freely */
 }
 
 .hidden {
@@ -61,22 +67,27 @@ button {
 }
 
 .message {
-    font-size: 15px;
-    color: #333;
+    font-size: 16px;
+    color: #444;
     min-height: 150px;
+    /* THIS IS THE KEY FIX: */
+    white-space: pre-line; 
+    line-height: 1.6;
+    text-align: left; /* Reads better for poems */
+    padding: 0 10px;
 }
 
 .gif {
     width: 100%;
     border-radius: 16px;
-    margin-top: 12px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- Background Music (autoplay workaround) -->
 <iframe width="0" height="0"
 src="https://www.youtube.com/embed/oKxuiw3iMBE?autoplay=1&loop=1&playlist=oKxuiw3iMBE"
 frameborder="0" allow="autoplay">
@@ -85,15 +96,14 @@ frameborder="0" allow="autoplay">
 <div class="container">
     <h1>🌹 Happy Rose Day 🌹</h1>
 
-    <button id="startBtn">See what Ayush wants to say to you 💌</button>
+    <button id="startBtn">See what Viku wants to say to you 💌</button>
 
     <div id="content" class="hidden">
         <p class="message" id="typingText"></p>
 
         <img class="gif" src="https://media.giphy.com/media/3oriO6qJiXajN0TyDu/giphy.gif">
 
-        <div>
-            <button id="acceptBtn">Accept Rose 🌹</button>
+        <div style="position: relative; height: 60px;"> <button id="acceptBtn">Accept Rose 🌹</button>
             <button id="rejectBtn">Reject Rose 😏</button>
         </div>
     </div>
@@ -106,6 +116,7 @@ const typingText = document.getElementById("typingText");
 const acceptBtn = document.getElementById("acceptBtn");
 const rejectBtn = document.getElementById("rejectBtn");
 
+// I cleaned up the spacing in this string so it types out neatly
 const message = 
 `Happy Rose Day my love 🌹❤️
 
@@ -120,12 +131,12 @@ I love you soooo much my ras malai ❤️
 More than words, more than roses,
 more than yesterday and less than tomorrow 💖
 
-Har phool ki apni mehak aur apni hi shaan hai, 
-Magar mere liye tu hi mera pura gulistan hai, 
-Kaise karoon bayaan tera rutba in chand lafzon mein, 
+Har phool ki apni mehak aur apni hi shaan hai,
+Magar mere liye tu hi mera pura gulistan hai,
+Kaise karoon bayaan tera rutba in chand lafzon mein,
 Sach toh ye hai ki tu har gulab se zyada haseen aur meri jaan hai.
 
-So tell me… will you take this rose? 🌹`;
+So tell me... will you take this rose? 🌹`;
 
 let index = 0;
 
@@ -139,14 +150,15 @@ function typeEffect() {
     if (index < message.length) {
         typingText.innerHTML += message.charAt(index);
         index++;
-        setTimeout(typeEffect, 40);
+        setTimeout(typeEffect, 35); // Speed adjustment
     }
 }
 
 acceptBtn.onclick = () => {
+    // Resetting style for the thank you message
     content.innerHTML = `
-        <h1>🥹🌹 AWWWWW 🌹🥹</h1>
-        <p class="message">
+        <h1 style="font-size: 24px;">🥹🌹 AWWWWW 🌹🥹</h1>
+        <p class="message" style="text-align: center;">
             I love you sooo sooo sooo much 😭❤️<br><br>
             I knew it… I JUST KNEW<br>
             you’d take my rose 🌹✨
@@ -155,9 +167,15 @@ acceptBtn.onclick = () => {
     `;
 };
 
+// Moving the reject button logic
 rejectBtn.onmouseover = () => {
+    const containerRect = document.querySelector('.container').getBoundingClientRect();
+    
+    // Calculate boundaries so the button stays roughly near the container (mobile friendly)
     const x = Math.random() * (window.innerWidth - 120);
     const y = Math.random() * (window.innerHeight - 60);
+    
+    rejectBtn.style.position = "fixed"; // Fixed ensures it breaks out of the layout flow
     rejectBtn.style.left = x + "px";
     rejectBtn.style.top = y + "px";
 };
@@ -165,4 +183,3 @@ rejectBtn.onmouseover = () => {
 
 </body>
 </html>
-
